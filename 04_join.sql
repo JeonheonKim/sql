@@ -428,16 +428,40 @@ Self 조인
 - 물리적으로 하나의 테이블을 두개의 테이블처럼 조인하는 것.
 **************************************************** */
 --직원의 ID(emp.emp_id), 이름(emp.emp_name), 상사이름(emp.emp_name)을 조회
-
+select e1.emp_id,
+        e1.emp_name 부하이름,
+        e1.salary,
+        e2.emp_id,
+        e2.emp_name 상사이름,
+        e2.salary
+        from emp e1 join emp e2 on e1.mgr_id = e2.emp_id;
+        
+select e1.emp_id,
+    e1.emp_name 부하이름,
+    e1.salary,
+    e2.emp_id,
+    e2.emp_name 상사이름,
+    e2.salary    
+from emp e1, emp e2
+where e1.mgr_id = e2.emp_id;
 
 
 -- TODO : EMP 테이블에서 직원 ID(emp.emp_id)가 110인 직원의 급여(salary)보다 많이 받는 직원들의 id(emp.emp_id), 
 -- 이름(emp.emp_name), 급여(emp.salary)를 직원 ID(emp.emp_id) 오름차순으로 조회.
+select e2.emp_id,e2.emp_name,e2.salary, e1.salary
+from emp e1 join emp e2 on e1.salary < e2.salary
+where e1.emp_id = 110
+order by 3;
 
-
+select e2.emp_id,e2.emp_name,e2.salary, e1.salary
+from emp e1, emp e2
+where e1.salary < e2.salary
+and e1.emp_id = 110
+order by 3;
 
 /* ****************************************************
 아우터 조인 (Outer Join)
+- 조인테이블에 소스 테이블의 행은 모두 붙이고 타겟테이블의 행은 조인여산을 만족하는 것만 붙인다.
 
 -불충분 조인 (조인 연산시 한쪽의 행이 불충분 해도 붙이도록) 
  - 소스(완전해야하는테이블)가 왼쪽이면 left join, 오른쪽이면 right join 양쪽이면 full outer join
