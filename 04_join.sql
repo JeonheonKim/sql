@@ -34,46 +34,64 @@ FROM  테이블a (별칭) INNER JOIN 테이블b (별칭) ON 조인조건
 - inner는 생략 할 수 있다.
 **************************************** */
 -- 직원의 ID(emp.emp_id), 이름(emp.emp_name), 입사년도(emp.hire_date), 소속부서이름(dept.dept_name)을 조회
-select  e.emp_id,
-        e.emp_name,
-        e.hire_date,
-        d.dept_name,
-        d.dept_id
-from    emp e inner join dept d on e.dept_id = d.dept_id; -- inner join은 이 조건에 만족하는 조건(Not null)만 불러옴
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.hire_date,
+    d.dept_name,
+    d.dept_id
+FROM
+         emp e
+    INNER JOIN dept d ON e.dept_id = d.dept_id; -- inner join은 이 조건에 만족하는 조건(Not null)만 불러옴
 
 -- 직원의 ID(emp.emp_id)가 100인 직원의 직원_ID(emp.emp_id), 이름(emp.emp_name), 입사년도(emp.hire_date), 소속부서이름(dept.dept_name)을 조회.
-select  e.emp_id,
-        e.emp_name,
-        to_char(e.hire_date,'yyyy"년"') hire_year 
-from    emp e join dept d on e.dept_id = d.dept_id
-where e.emp_id = 100;
+SELECT
+    e.emp_id,
+    e.emp_name,
+    to_char(e.hire_date, 'yyyy"년"') hire_year
+FROM
+         emp e
+    JOIN dept d ON e.dept_id = d.dept_id
+WHERE
+    e.emp_id = 100;
 
 -- 직원_ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 담당업무명(job.job_title), 소속부서이름(dept.dept_name)을 조회
-select  e.emp_id,
-        e.emp_name,
-        e.salary,
-        j.job_title,
-        d.dept_name
-from    emp e join job j on e.job_id = j.job_id
-              join dept d on e.dept_id = d.dept_id;
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.salary,
+    j.job_title,
+    d.dept_name
+FROM
+         emp e
+    JOIN job   j ON e.job_id = j.job_id
+    JOIN dept  d ON e.dept_id = d.dept_id;
 
 
 -- 부서_ID(dept.dept_id)가 30인 부서의 이름(dept.dept_name), 위치(dept.loc), 그 부서에 소속된 직원의 이름(emp.emp_name)을 조회.
-select  d.dept_name,
-        d.loc,
-        e.emp_name,
-        d.dept_id
-from    dept d join emp e on d.dept_id = e.dept_id
+SELECT
+    d.dept_name,
+    d.loc,
+    e.emp_name,
+    d.dept_id
+FROM
+         dept d
+    JOIN emp e ON d.dept_id = e.dept_id
 --from    emp e join dept d on e.dept_id = d.dept_id
-where   d.dept_id = 30;
+WHERE
+    d.dept_id = 30;
 
 -- 직원의 ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 급여등급(salary_grade.grade) 를 조회. 급여 등급 오름차순으로 정렬
-select  e.emp_id,
-        e.emp_name,
-        e.salary,
-        s.grade||'등급'
-from emp e join salary_grade s on e.salary between s.low_sal and s.high_sal
-order by 4;
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.salary,
+    s.grade || '등급'
+FROM
+         emp e
+    JOIN salary_grade s ON e.salary BETWEEN s.low_sal AND s.high_sal
+ORDER BY
+    4;
 
 
 --TODO 200번대(200 ~ 299) 직원 ID(emp.emp_id)를 가진 직원들의 직원_ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 
@@ -128,12 +146,19 @@ order by 4;
 
 
 --TODO 부서별 급여등급이(salary_grade.grade) 1인 직원있는 부서이름(dept.dept_name)과 1등급인 직원수 조회. 직원수가 많은 부서 순서대로 정렬.
-select d.dept_name, count(*) 직원수
-from    emp e join dept d on e.dept_id = d.dept_id
-              join salary_grade s on e.salary between s.low_sal and s.high_sal
-where s.grade = 1
-group by d.dept_name
-order by 2 desc;
+SELECT
+    d.dept_name,
+    COUNT(*) 직원수
+FROM
+         emp e
+    JOIN dept          d ON e.dept_id = d.dept_id
+    JOIN salary_grade  s ON e.salary BETWEEN s.low_sal AND s.high_sal
+WHERE
+    s.grade = 1
+GROUP BY
+    d.dept_name
+ORDER BY
+    2 DESC;
 
 
 /* ###################################################################################### 
@@ -144,83 +169,258 @@ order by 2 desc;
 ###################################################################################### */
 -- 직원의 ID(emp.emp_id), 이름(emp.emp_name), 입사년도(emp.hire_date), 소속부서이름(dept.dept_name)을 조회
 -- 입사년도는 년도만 출력
-select  e.emp_id, e.emp_name, to_char(hire_date,'yyyy"년"') 입사년도,d.dept_name
-from    emp e, dept d
-where   e.emp_id = d.dept_id;
+SELECT
+    e.emp_id,
+    e.emp_name,
+    to_char(hire_date, 'yyyy"년"') 입사년도,
+    d.dept_name
+FROM
+    emp   e,
+    dept  d
+WHERE
+    e.emp_id = d.dept_id;
 
 
 -- 직원의 ID(emp.emp_id)가 100인 직원의 직원_ID(emp.emp_id), 이름(emp.emp_name), 입사년도(emp.hire_date), 소속부서이름(dept.dept_name)을 조회
 -- 입사년도는 년도만 출력
-select  e.emp_id, e.emp_name, to_char(hire_date,'yyyy"년"') 입사년도,d.dept_name
-from    emp e, dept d
-where   e.emp_id = d.dept_id
-and     e.emp_id = 100;
+SELECT
+    e.emp_id,
+    e.emp_name,
+    to_char(hire_date, 'yyyy"년"') 입사년도,
+    d.dept_name
+FROM
+    emp   e,
+    dept  d
+WHERE
+        e.emp_id = d.dept_id
+    AND e.emp_id = 100;
 
 
 -- 직원_ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 담당업무명(job.job_title), 소속부서이름(dept.dept_name)을 조회
-select  e.emp_id, e.emp_name, e.salary, j.job_title,d.dept_name
-from    emp e, dept d, job j
-where   e.emp_id = d.dept_id
-and     e.job_id = j.job_id;
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.salary,
+    j.job_title,
+    d.dept_name
+FROM
+    emp   e,
+    dept  d,
+    job   j
+WHERE
+        e.emp_id = d.dept_id
+    AND e.job_id = j.job_id;
 
 
 --TODO 200번대(200 ~ 299) 직원 ID(emp.emp_id)를 가진 직원들의 직원_ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 
 --     소속부서이름(dept.dept_name), 부서위치(dept.loc)를 조회. 직원_ID의 오름차순으로 정렬.
-
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.salary,
+    d.dept_name,
+    d.loc
+FROM
+    emp   e,
+    dept  d
+WHERE
+    e.dept_id = d.dept_id
+ORDER BY
+    1;
 
 
 --TODO 업무(emp.job_id)가 'FI_ACCOUNT'인 직원의 ID(emp.emp_id), 이름(emp.emp_name), 업무(emp.job_id), 
 --     소속부서이름(dept.dept_name), 부서위치(dept.loc)를 조회.  직원_ID의 오름차순으로 정렬.
-
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.job_id,
+    d.dept_name,
+    d.loc
+FROM
+    emp   e,
+    dept  d
+WHERE
+        e.dept_id = d.dept_id
+    AND e.job_id = 'FI_ACCOUNT';
 
 
 --TODO 커미션비율(emp.comm_pct)이 있는 직원들의 직원_ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 커미션비율(emp.comm_pct), 
 --     소속부서이름(dept.dept_name), 부서위치(dept.loc)를 조회. 직원_ID의 오름차순으로 정렬.
 
-
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.salary,
+    e.comm_pct,
+    d.dept_name,
+    d.loc
+FROM
+    emp   e,
+    dept  d
+WHERE
+        e.dept_id = d.dept_id
+    AND e.comm_pct IS NOT NULL
+ORDER BY
+    1;
 
 
 --TODO 'New York'에 위치한(dept.loc) 부서의 부서_ID(dept.dept_id), 부서이름(dept.dept_name), 위치(dept.loc), 
 --     그 부서에 소속된 직원_ID(emp.emp_id), 직원 이름(emp.emp_name), 업무(emp.job_id)를 조회. 부서_ID 의 오름차순으로 정렬.
+SELECT
+    d.dept_id,
+    d.dept_name,
+    d.loc,
+    e.emp_id,
+    e.emp_name,
+    e.job_id
+FROM
+    emp   e,
+    dept  d
+WHERE
+        d.dept_id = e.dept_id
+    AND d.loc = 'New York'
+ORDER BY
+    1;
 
 
 
 --TODO 직원_ID(emp.emp_id), 이름(emp.emp_name), 업무_ID(emp.job_id), 업무명(job.job_title) 를 조회.
 
-
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.job_id,
+    j.job_title
+FROM
+    emp  e,
+    job  j
+WHERE
+    e.job_id = j.job_id;
 
              
 -- TODO: 직원 ID 가 200 인 직원의 직원_ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 
 --       담당업무명(job.job_title), 소속부서이름(dept.dept_name)을 조회              
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.salary,
+    j.job_title,
+    d.dept_name
+FROM
+    emp   e,
+    job   j,
+    dept  d
+WHERE
+        e.job_id = j.job_id
+    AND e.emp_id = 200;
 
 
 
 -- TODO: 'Shipping' 부서의 부서명(dept.dept_name), 위치(dept.loc), 소속 직원의 이름(emp.emp_name), 업무명(job.job_title)을 조회. 
 --       직원이름 내림차순으로 정렬
-
+SELECT
+    d.dept_name,
+    d.loc,
+    e.emp_name,
+    j.job_title
+FROM
+    emp   e,
+    dept  d,
+    job   j
+WHERE
+        e.dept_id = d.dept_id
+    AND e.job_id = j.job_id
+    AND d.dept_name = 'Shipping'
+ORDER BY
+    3 DESC;
 
 
 -- TODO:  'San Francisco' 에 근무(dept.loc)하는 직원의 id(emp.emp_id), 이름(emp.emp_name), 입사일(emp.hire_date)를 조회
 --         입사일은 'yyyy-mm-dd' 형식으로 출력
 
+SELECT
+    e.emp_id,
+    e.emp_name,
+    to_char(e.hire_date, 'yyyy-mm-dd') "yyyy-mm-dd"
+FROM
+    emp   e,
+    dept  d
+WHERE
+        e.dept_id = d.dept_id
+    AND d.loc = 'San Francisco';
 
 
 --TODO 부서별 급여(salary)의 평균을 조회. 부서이름(dept.dept_name)과 급여평균을 출력. 급여 평균이 높은 순서로 정렬.
 -- 급여는 , 단위구분자와 $ 를 붙여 출력.
+SELECT
+    to_char(round(AVG(salary), 2), 'fmL999,999,999.99') sal_avg,
+    d.dept_name
+FROM
+    emp   e,
+    dept  d
+WHERE
+    e.dept_id = d.dept_id
+GROUP BY
+    d.dept_name
+ORDER BY
+    AVG(salary) DESC; -- 숫자 자체를 order by에 적용
 
 
 
 --TODO 직원의 ID(emp.emp_id), 이름(emp.emp_name), 급여(emp.salary), 급여등급(salary_grade.grade) 를 조회. 직원 id 오름차순으로 정렬
-
-
-
+SELECT
+    e.emp_id,
+    e.emp_name,
+    e.salary,
+    s.grade
+FROM
+    emp           e,
+    salary_grade  s
+WHERE
+    e.salary BETWEEN s.low_sal AND s.high_sal
+ORDER BY
+    1;
 
 --TODO 직원의 ID(emp.emp_id), 이름(emp.emp_name), 업무명(job.job_title), 급여(emp.salary), 
 --     급여등급(salary_grade.grade), 소속부서명(dept.dept_name)을 조회. 등급 내림차순으로 정렬
-
+SELECT
+    e.emp_id,
+    e.emp_name,
+    j.job_title,
+    e.salary,
+    s.grade,
+    d.dept_name
+FROM
+    emp           e,
+    dept          d,
+    job           j,
+    salary_grade  s
+WHERE
+        e.job_id = j.job_id
+    AND e.dept_id = d.dept_id
+    AND e.salary BETWEEN s.low_sal AND s.high_sal
+ORDER BY
+    s.grade DESC;
 
 
 --TODO 부서별 급여등급이(salary_grade.grade) 1인 직원있는 부서이름(dept.dept_name)과 1등급인 직원수 조회. 직원수가 많은 부서 순서대로 정렬.
+SELECT
+    d.dept_name,
+    COUNT(*)
+FROM
+    emp           e,
+    dept          d,
+    salary_grade  s
+WHERE
+        e.dept_id = d.dept_id
+    AND e.salary BETWEEN s.low_sal AND s.high_sal
+    AND s.grade = 1
+GROUP BY
+    d.dept_name
+ORDER BY
+    2;
+
 
 
 /* ****************************************************
@@ -284,7 +484,3 @@ from 테이블a [LEFT | RIGHT | FULL] OUTER JOIN 테이블b ON 조인조건
 --TODO 2003년~2005년 사이에 입사한 직원의 id(emp.emp_id), 이름(emp.emp_name), 업무명(job.job_title), 급여(emp.salary), 입사일(emp.hire_date),
 --     상사이름(emp.emp_name), 상사의입사일(emp.hire_date), 소속부서이름(dept.dept_name), 부서위치(dept.loc)를 조회.
 -- 2003년에서 2005년 사이 입사한 직원은 모두 나오도록 조회한다. 
-
-
-
-
