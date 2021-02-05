@@ -102,7 +102,7 @@ WHERE
 SELECT
     MAX(salary)                   최대값,
     MIN(salary)                   최소값,
-    round(AVG(salary), 2)          "salary 평균값"
+    round(AVG(salary), 2)         "salary 평균값"
 FROM
     emp;
 

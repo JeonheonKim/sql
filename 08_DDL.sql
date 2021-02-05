@@ -139,137 +139,283 @@ ALTER : 테이블 수정
 ************************************************************************************ */
 -- customers 카피해서 cust
 -- select 결과 set을 테이블로 생성 (Not null을 제외한 제약조건 카피 안됨.)
-create table cust
-as
-select * from customers;
+CREATE TABLE cust
+    AS
+        SELECT
+            *
+        FROM
+            customers;
 
-create table cust2
-as 
-select cust_id, cust_name, address from customers;
+CREATE TABLE cust2
+    AS
+        SELECT
+            cust_id,
+            cust_name,
+            address
+        FROM
+            customers;
 
-create table cust3
-as
-select * from customers
-where 1 = 0; -- False , 컬럼들만 카피. 안의 내용은 카피하지 않는다.
+CREATE TABLE cust3
+    AS
+        SELECT
+            *
+        FROM
+            customers
+        WHERE
+            1 = 0; -- False , 컬럼들만 카피. 안의 내용은 카피하지 않는다.
 
-select * from cust3;
-desc cust3;
+SELECT
+    *
+FROM
+    cust3;
+
+DESC cust3;
 -- 추가
-alter table cust3 add(age number default 0 not null, point number);
+ALTER TABLE cust3 ADD (
+    age    NUMBER DEFAULT 0 NOT NULL,
+    point  NUMBER
+);
 -- 수정
-alter table cust3 modify(age number(3)); -- NOT NULL 과 같은 다른 설정 변경 x
-alter table cust3 modify(cust_email null); -- NOT NULL 컬럼을 NULL 컬럼으로 변경
-alter table cust3 modify(cust_email not null);
+ALTER TABLE cust3 MODIFY (
+    age NUMBER(3)
+); -- NOT NULL 과 같은 다른 설정 변경 x
+ALTER TABLE cust3 MODIFY (
+    cust_email null
+); -- NOT NULL 컬럼을 NULL 컬럼으로 변경
+ALTER TABLE cust3 MODIFY (
+    cust_email NOT NULL
+);
 -- 컬럼명 변경
-alter table cust3 rename column cust_email to email; -- cust_email --> email 변경
+ALTER TABLE cust3 RENAME COLUMN cust_email TO email; -- cust_email --> email 변경
 -- 컬럼 삭제
-alter table cust3 drop column age;
+ALTER TABLE cust3 DROP COLUMN age;
 
-select * from cust;
-desc cust;
+SELECT
+    *
+FROM
+    cust;
 
-alter table cust modify(cust_id number(2)); -- -99 ~ 99 --> 이미 id 100 존재하기 때문에 에러 발생
-alter table cust3 modify(cust_id number(3)); -- 값 존재 하지 않기 때문에 가능
-alter table cust modify(cust_id number(5)); -- 기존 데이터에 영향을 끼치지 않을 경우(늘리는)에는 범위 변경 가능
-rollback; -- 변경된 타입은 돌아가지 않음. rollback/commit[DML명령어]은 대상이 아니다.
+DESC cust;
 
-alter cust add (age number(3) not null); -- 이미 존재하는 테이블에 값 대입 없기 때문에 null로 채워진다. 하지만 not null조건 때문에 오류 발생
+ALTER TABLE cust MODIFY (
+    cust_id NUMBER(2)
+); -- -99 ~ 99 --> 이미 id 100 존재하기 때문에 에러 발생
+ALTER TABLE cust3 MODIFY (
+    cust_id NUMBER(3)
+); -- 값 존재 하지 않기 때문에 가능
+ALTER TABLE cust MODIFY (
+    cust_id NUMBER(5)
+); -- 기존 데이터에 영향을 끼치지 않을 경우(늘리는)에는 범위 변경 가능
+ROLLBACK; -- 변경된 타입은 돌아가지 않음. rollback/commit[DML명령어]은 대상이 아니다.
+
+alter cust ADD (
+    age NUMBER(3) NOT NULL
+); -- 이미 존재하는 테이블에 값 대입 없기 때문에 null로 채워진다. 하지만 not null조건 때문에 오류 발생
 
 --제약조건 변경
 -- 각 테이블의 제약조건들 조회
-select * from user_constraints;
-select * from user_constraints where table_name = 'CUST';
+SELECT
+    *
+FROM
+    user_constraints;
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'CUST';
 
 -- 제약조건 추가
-alter table cust add constraint pk_cust primary key (cust_id);
-alter table cust add constraint uk_cust_email unique (cust_email);
-alter table cust add constraint ck_cust_gender check (gender in ('M','F'));
+ALTER TABLE cust ADD CONSTRAINT pk_cust PRIMARY KEY ( cust_id );
+
+ALTER TABLE cust ADD CONSTRAINT uk_cust_email UNIQUE ( cust_email );
+
+ALTER TABLE cust
+    ADD CONSTRAINT ck_cust_gender CHECK ( gender IN ( 'M', 'F' ) );
 
 -- 제약조건 제거
-alter table cust drop constraint ck_cust_gender;
-alter table cust drop primary key; -- pk 는 유일하기 때문에
+ALTER TABLE cust DROP CONSTRAINT ck_cust_gender;
+
+ALTER TABLE cust DROP PRIMARY KEY; -- pk 는 유일하기 때문에
 
 
 --TODO: emp 테이블을 카피해서 emp2를 생성(틀만 카피)
-create table emp2
-as
-select * from emp
-where 1 = 0;
-select * from emp2;
+CREATE TABLE emp2
+    AS
+        SELECT
+            *
+        FROM
+            emp
+        WHERE
+            1 = 0;
+
+SELECT
+    *
+FROM
+    emp2;
 
 --TODO: gender 컬럼을 추가: type char(1)
-alter table emp2 add (gender char(1));
-desc emp2;
+ALTER TABLE emp2 ADD (
+    gender CHAR(1)
+);
+
+DESC emp2;
 
 --TODO: email 컬럼 추가. type: varchar2(100),  not null  컬럼
-alter table emp2 add (email varchar2(100) not null);
-desc emp2;
+ALTER TABLE emp2 ADD (
+    email VARCHAR2(100) NOT NULL
+);
+
+DESC emp2;
 
 --TODO: jumin_num(주민번호) 컬럼을 추가. type: char(14), null 허용. 유일한 값을 가지는 컬럼.
-alter table emp2 add (jumin_num char(14) null);
-alter table emp2 add constraint uk_emp2_jumin_num unique(jumin_num);
-desc emp2;
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2 ADD (
+    jumin_num CHAR(14) NULL
+);
+
+ALTER TABLE emp2 ADD CONSTRAINT uk_emp2_jumin_num UNIQUE ( jumin_num );
+
+DESC emp2;
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
 
 --TODO: emp_id 를 primary key 로 변경
-alter table emp2 add constraint pk_emp2 primary key(emp_id);
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2 ADD CONSTRAINT pk_emp2 PRIMARY KEY ( emp_id );
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
   
 --TODO: gender 컬럼의 M, F 저장하도록  제약조건 추가
-alter table emp2 add constraint pk_emp2_gender check(gender in ('M','F'));
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2
+    ADD CONSTRAINT pk_emp2_gender CHECK ( gender IN ( 'M', 'F' ) );
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
  
 --TODO: salary 컬럼에 0이상의 값들만 들어가도록 제약조건 추가
-alter table emp2 add constraint pk_emp2_salary check(salary >= 0);
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2 ADD CONSTRAINT pk_emp2_salary CHECK ( salary >= 0 );
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
 
 --TODO: email 컬럼을 null을 가질 수 있되 다른 행과 같은 값을 가지지 못하도록 제약 조건 변경
-alter table emp2 add constraint uk_emp2_email unique(email);
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2 ADD CONSTRAINT uk_emp2_email UNIQUE ( email );
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
 
 --TODO: emp_name 의 데이터 타입을 varchar2(100) 으로 변환
-alter table emp2 modify (emp_name varchar2(100)) ;
-desc emp2;
+ALTER TABLE emp2 MODIFY (
+    emp_name VARCHAR2(100)
+);
+
+DESC emp2;
 
 --TODO: job_id를 not null 컬럼으로 변경
-alter table emp2 modify (job_id not null);
-desc emp2;
+ALTER TABLE emp2 MODIFY (
+    job_id NOT NULL
+);
+
+DESC emp2;
 
 --TODO: dept_id를 not null 컬럼으로 변경
-alter table emp2 modify (dept_id not null) ;
-select * from emp2;
-desc emp2;
+ALTER TABLE emp2 MODIFY (
+    dept_id NOT NULL
+);
+
+SELECT
+    *
+FROM
+    emp2;
+
+DESC emp2;
 
 --TODO: job_id  를 null 허용 컬럼으로 변경
-alter table emp2 modify (job_id null) ;
-select * from emp2;
-desc emp2;
+ALTER TABLE emp2 MODIFY (
+    job_id null
+);
+
+SELECT
+    *
+FROM
+    emp2;
+
+DESC emp2;
 
 --TODO: dept_id  를 null 허용 컬럼으로 변경
-alter table emp2 modify (dept_id null) ;
-select * from emp2;
-desc emp2;
+ALTER TABLE emp2 MODIFY (
+    dept_id null
+);
+
+SELECT
+    *
+FROM
+    emp2;
+
+DESC emp2;
 
 
 --TODO: 위에서 지정한 emp2_email_uk 제약 조건을 제거
-alter table emp2 drop constraint UK_EMP2_EMAIL;
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2 DROP CONSTRAINT uk_emp2_email;
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
 
 --TODO: 위에서 지정한 emp2_salary_ck 제약 조건을 제거
-alter table emp2 drop constraint PK_EMP2_SALARY;
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2 DROP CONSTRAINT pk_emp2_salary;
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
 
 --TODO: primary key 제약조건 제거
-alter table emp2 drop primary key;
-select * from user_constraints where table_name = 'EMP2';
+ALTER TABLE emp2 DROP PRIMARY KEY;
+
+SELECT
+    *
+FROM
+    user_constraints
+WHERE
+    table_name = 'EMP2';
 
 --TODO: gender 컬럼제거
-alter table emp2 drop column gender;
-desc emp2;
+ALTER TABLE emp2 DROP COLUMN gender;
+
+DESC emp2;
 
 --TODO: email 컬럼 제거
-alter table emp2 drop column email;
-desc emp2;
+ALTER TABLE emp2 DROP COLUMN email;
+
+DESC emp2;
 
 /* **************************************************************************************************************
 시퀀스 : SEQUENCE
@@ -321,126 +467,200 @@ DROP SEQUENCE sequence이름
 ************************************************************************************************************** */
 
 -- 1부터 1씩 자동증가하는 시퀀스
-create sequence dept_id_seq; 
+CREATE SEQUENCE dept_id_seq; 
 
 --seq이름.nextval()
 
-select dept_id_seq.nextval from dual;
-select dept_id_seq.currval from dual;
+SELECT
+    dept_id_seq.NEXTVAL
+FROM
+    dual;
 
-insert into dept values(dept_id_seq.nextval,'new'||dept_id_seq.currval,'seoul');
-select * from dept;
+SELECT
+    dept_id_seq.CURRVAL
+FROM
+    dual;
+
+INSERT INTO dept VALUES (
+    dept_id_seq.NEXTVAL,
+    'new' || dept_id_seq.CURRVAL,
+    'seoul'
+);
+
+SELECT
+    *
+FROM
+    dept;
 -- 1부터 50까지 10씩 자동증가 하는 시퀀스
-create sequence ex1_seq 
-        increment by 10 
-        maxvalue 50;
+CREATE SEQUENCE ex1_seq INCREMENT BY 10 MAXVALUE 50;
 
-select exl_seq.nextval from dual;
+SELECT
+    exl_seq.NEXTVAL
+FROM
+    dual;
 
 -- 100 부터 150까지 10씩 자동증가하는 시퀀스
-create sequence ex2_seq 
-        increment by 10
-        start with 100
-        maxvalue 150;
-        
-select ex2_seq.nextval from dual;        
+CREATE SEQUENCE ex2_seq INCREMENT BY 10 START WITH 100 MAXVALUE 150;
+
+SELECT
+    ex2_seq.NEXTVAL
+FROM
+    dual;        
 
 
 
 -- 100 부터 150까지 10씩 자동증가하되 최대값에 다다르면 순환하는 시퀀스
 -- 순환(cycle) 할때 증가(increment by 양수) : minvalue(기본값:1)에서 시작
 -- 순환(cycle) 할때 증가(increment by 음수) : maxvalue(기본값:-1)에서 시작
-drop sequence ex3_seq;
-create sequence ex3_seq 
-        increment by 20
-        start with 100
-        minvalue 100
-        maxvalue 150
-        nocache
-        cycle;
-        
-select ex3_seq.nextval from dual;     
+DROP SEQUENCE ex3_seq;
+
+CREATE SEQUENCE ex3_seq INCREMENT BY 20 START WITH 100 MINVALUE 100 MAXVALUE 150 NOCACHE CYCLE;
+
+SELECT
+    ex3_seq.NEXTVAL
+FROM
+    dual;     
 
 
 -- -1부터 -1씩 자동 감소하는 시퀀스
-create sequence ex4_seq
-        increment by -1; -- 자동감소 : start with 기본값 -1
-        
-select ex4_seq.nextval from dual;   
+CREATE SEQUENCE ex4_seq INCREMENT BY - 1; -- 자동감소 : start with 기본값 -1
+
+SELECT
+    ex4_seq.NEXTVAL
+FROM
+    dual;   
 
 
 -- -1부터 -50까지 -10씩 자동 감소하는 시퀀스
 
-create sequence ex5_seq
-        increment by -10
-        minvalue -50;
-        
-select ex5_seq.nextval from dual;   
+CREATE SEQUENCE ex5_seq INCREMENT BY - 10 MINVALUE - 50;
+
+SELECT
+    ex5_seq.NEXTVAL
+FROM
+    dual;   
 
 -- 100 부터 -100까지 -100씩 자동 감소하는 시퀀스
-create sequence ex6_seq
-        increment by -100
-        start with 100
-        minvalue -100
-        maxvalue 100; -- maxvalue :-1(감소), 1(증가)| 감소 : maxvalue >= startvalue, 증가 : maxvalue=<startvalue
-        
-select ex6_seq.nextval from dual; 
+CREATE SEQUENCE ex6_seq INCREMENT BY - 100 START WITH 100 MINVALUE - 100 MAXVALUE 100; -- maxvalue :-1(감소), 1(증가)| 감소 : maxvalue >= startvalue, 증가 : maxvalue=<startvalue
+
+SELECT
+    ex6_seq.NEXTVAL
+FROM
+    dual; 
 
 
 -- 15ㅎ에서 -15까지 1씩 감소하는 시퀀스 작성
-create sequence ex7_seq
-        increment by -1
-        start with 15
-        minvalue -15
-        maxvalue 15;
-        
-select ex7_seq.nextval from dual; 
+CREATE SEQUENCE ex7_seq INCREMENT BY - 1 START WITH 15 MINVALUE - 15 MAXVALUE 15;
+
+SELECT
+    ex7_seq.NEXTVAL
+FROM
+    dual; 
 
 
 
 -- -10 부터 1씩 증가하는 시퀀스 작성
 
-create sequence ex8_seq
-        increment by 1
-        start with -10
-        minvalue -10;
-        
-select ex8_seq.nextval from dual; 
+CREATE SEQUENCE ex8_seq INCREMENT BY 1 START WITH - 10 MINVALUE - 10;
+
+SELECT
+    ex8_seq.NEXTVAL
+FROM
+    dual; 
 
 
 
 -- TODO: 부서ID(dept.dept_id)의 값을 자동증가 시키는 sequence를 생성. 10 부터 10씩 증가하는 sequence
 -- 위에서 생성한 sequence를 사용해서  dept_copy에 5개의 행을 insert.
-drop sequence dept_id_seq;
-create sequence dept_id_seq
-    increment by 10
-    start with 10
-    minvalue 10;
+DROP SEQUENCE dept_id_seq;
 
-drop table dept_copy;
-create table dept_copy
-as
-select * from dept
-where 1 = 0;
+CREATE SEQUENCE dept_id_seq INCREMENT BY 10 START WITH 10 MINVALUE 10;
 
-insert into dept_copy values (dept_id_seq.nextval,'마케팅','서울');
-insert into dept_copy values (dept_id_seq.nextval,'구매부','서울');
-insert into dept_copy values (dept_id_seq.nextval,'기획부','서울');
-select * from dept_copy;
+DROP TABLE dept_copy;
+
+CREATE TABLE dept_copy
+    AS
+        SELECT
+            *
+        FROM
+            dept
+        WHERE
+            1 = 0;
+
+INSERT INTO dept_copy VALUES (
+    dept_id_seq.NEXTVAL,
+    '마케팅',
+    '서울'
+);
+
+INSERT INTO dept_copy VALUES (
+    dept_id_seq.NEXTVAL,
+    '구매부',
+    '서울'
+);
+
+INSERT INTO dept_copy VALUES (
+    dept_id_seq.NEXTVAL,
+    '기획부',
+    '서울'
+);
+
+SELECT
+    *
+FROM
+    dept_copy;
 
 -- TODO: 직원ID(emp.emp_id)의 값을 자동증가 시키는 sequence를 생성. 10 부터 1씩 증가하는 sequence
 -- 위에서 생성한 sequence를 사용해 emp_copy에 값을 5행 insert
-create sequence emp_id_seq
-    start with 10;
+CREATE SEQUENCE emp_id_seq START WITH 10;
 
-drop table emp_copy;
-create table emp_copy
-as
-select * from emp where 1 = 0;
+DROP TABLE emp_copy;
 
-insert into emp_copy values(emp_id_seq.nextval,'KJH',null,null,sysdate,30000,null,null);
-insert into emp_copy values(emp_id_seq.nextval,'KJH',null,null,sysdate,30000,null,null);
-insert into emp_copy values(emp_id_seq.nextval,'KJH',null,null,sysdate,30000,null,null);
-desc emp_copy;
+CREATE TABLE emp_copy
+    AS
+        SELECT
+            *
+        FROM
+            emp
+        WHERE
+            1 = 0;
 
-select * from emp_copy;
+INSERT INTO emp_copy VALUES (
+    emp_id_seq.NEXTVAL,
+    'KJH',
+    NULL,
+    NULL,
+    sysdate,
+    30000,
+    NULL,
+    NULL
+);
+
+INSERT INTO emp_copy VALUES (
+    emp_id_seq.NEXTVAL,
+    'KJH',
+    NULL,
+    NULL,
+    sysdate,
+    30000,
+    NULL,
+    NULL
+);
+
+INSERT INTO emp_copy VALUES (
+    emp_id_seq.NEXTVAL,
+    'KJH',
+    NULL,
+    NULL,
+    sysdate,
+    30000,
+    NULL,
+    NULL
+);
+
+DESC emp_copy;
+
+SELECT
+    *
+FROM
+    emp_copy;
